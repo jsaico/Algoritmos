@@ -194,13 +194,6 @@ def hoja2(c):
         xx=x0
         for (n,w,al),v in zip(cw,vals): txt(c,{'l':xx+4,'r':xx+w-4}[al],y-8.5,str(v),'R',7.3,INK,al); xx+=w
         c.setStrokeColor(HexColor('#E5DFD7')); c.line(x0,y-11,x0+sum(w for _,w,_ in cw),y-11); y-=11
-    # firmas
-    fy=M+36; fw=170
-    for i,(a,b) in enumerate([('Residente de obra','Ing. Justo'),('Supervisor / Inspector de obra',''),('Vº Bº Entidad','')]):
-        fx=W-M-3*fw-2*24+i*(fw+24)
-        if fx< x0+sum(w for _,w,_ in cw)+20: fx=M+40+i*(fw+80)
-        c.setStrokeColor(INK); c.setLineWidth(0.6); c.line(fx,fy,fx+fw,fy)
-        txt(c,fx+fw/2,fy-9,a,'B',7.5,INK,'c'); txt(c,fx+fw/2,fy-18,b,'R',7,MUTE,'c')
     footer(c,2)
 
 c=canvas.Canvas(OUT,pagesize=landscape(A4))
