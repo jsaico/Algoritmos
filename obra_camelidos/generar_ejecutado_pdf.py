@@ -22,6 +22,9 @@ for r in range(6,41):
     if g(1) is None or g(10)!='Ejecutado' or g(8) is None: continue
     tr.append(dict(meta=g(1),resp=g(3),tipo=g(4),n=g(5),a=g(6),b=g(7),ini=td(g(8)),fin=td(g(9))))
 FIN=max(t['fin'] for t in tr)  # fin de partidas ejecutadas
+# cuadrillas numeradas (en lugar de nombres), en orden de aparición
+CUAD={}
+for _t in tr: CUAD.setdefault(_t['resp'],f'Cuadrilla {len(CUAD)+1}')
 apoyo=dict(act=D['B45'].value,resp=D['C45'].value,n=D['D45'].value,a=D['E45'].value,b=D['F45'].value,ini=td(D['G45'].value),fin=td(D['H45'].value))
 hitos=[(td(D.cell(r,2).value),D.cell(r,3).value) for r in (50,51)]
 fer={td(D.cell(r,15).value) for r in range(6,21) if D.cell(r,15).value}
@@ -71,7 +74,7 @@ def hoja1(c):
     top=H-M-44-18
     txt(c,M,top+4,'PROGRAMA EJECUTADO POR META Y FRENTE DE TRABAJO','B',10)
     txt(c,W-M,top+4,'E.T. = expediente técnico  ·  M.M. = mayores metrados  ·  MOD = módulo de cobertizo','I',7.2,MUTE,'r')
-    cols=[('FRENTE',96),('TIPO',26),('MÓDULOS',56),('N°',18),('INICIO',46),('FIN',46)]
+    cols=[('CUADRILLA',96),('TIPO',26),('MÓDULOS',56),('N°',18),('INICIO',46),('FIN',46)]
     LW=sum(w for _,w in cols); x0=M+LW+6; x1=W-M; dw=(x1-x0)/ND; X=lambda d:x0+(d-D0).days*dw
     y=top-6
     # meses
@@ -112,7 +115,7 @@ def hoja1(c):
             continue
         c.setStrokeColor(HexColor('#E5DFD7')); c.setLineWidth(0.3); c.line(M,y,W-M,y)
         if k in('t','a'):
-            t=o; vals=[t['resp'].replace('Frente obra · ',''),'Apoyo' if k=='a' else t['tipo'],f"MOD{t['a']}–MOD{t['b']}",t['n'],fd(t['ini']),fd(t['fin'])]
+            t=o; vals=[CUAD.setdefault(t['resp'],f'Cuadrilla {len(CUAD)+1}'),'Apoyo' if k=='a' else t['tipo'],f"MOD{t['a']}–MOD{t['b']}",t['n'],fd(t['ini']),fd(t['fin'])]
             xx=M
             for i,((_,w),v) in enumerate(zip(cols,vals)): txt(c,xx+3,ty,fit(str(v),'B' if i==0 else 'R',7.5,w-4),'B' if i==0 else 'R',7.5); xx+=w
             col=APO if k=='a' else (C_ET if t['tipo']=='E.T.' else C_MM)[t['meta']]
