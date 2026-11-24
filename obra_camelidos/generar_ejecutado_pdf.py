@@ -24,15 +24,15 @@ for r in range(6,41):
 apoyo=dict(act=D['B45'].value,resp=D['C45'].value,n=D['D45'].value,a=D['E45'].value,b=D['F45'].value,ini=td(D['G45'].value),fin=td(D['H45'].value))
 hitos=[(td(D.cell(r,2).value),D.cell(r,3).value) for r in (50,51)]
 fer={td(D.cell(r,15).value) for r in range(6,21) if D.cell(r,15).value}
-PER=['Jul','Ago','Set','Oct']; PL=['Julio','Agosto','Setiembre','Octubre']
+PER=['Jul','Ago','Set','Oct','Nov']; PL=['Julio','Agosto','Setiembre','Octubre','Noviembre']
 part=[]
 for r in range(6,60):
     if V.cell(r,1).value and V.cell(r,3).value:
         part.append(dict(item=V.cell(r,1).value,desc=V.cell(r,2).value.strip().capitalize(),und=V.cell(r,3).value,meta=V.cell(r,4).value,
-            mu=V.cell(r,5).value,met=[V.cell(r,9+k).value for k in range(4)],val=[V.cell(r,17+k).value for k in range(4)]))
+            mu=V.cell(r,5).value,met=[V.cell(r,9+k).value for k in range(5)],val=[V.cell(r,17+k).value for k in range(5)]))
 META={1:'Trazo, replanteo y excavaciones',2:'Muros',3:'Techos'}
 mmods={m:sum(t['n'] for t in tr if t['meta']==m) for m in (1,2,3)}
-vmes=[sum(p['val'][k] for p in part) for k in range(4)]; VT=sum(vmes)
+vmes=[sum(p['val'][k] for p in part) for k in range(5)]; VT=sum(vmes)
 vmeta={m:sum(sum(p['val']) for p in part if p['meta']==m) for m in (1,2,3)}
 
 INK=HexColor('#26221F'); MUTE=HexColor('#6E665E'); LINE=HexColor('#CFC8BF'); LIGHT=HexColor('#F4F1EC')
@@ -43,7 +43,7 @@ MES=['','ene','feb','mar','abr','may','jun','jul','ago','set','oct','nov','dic']
 fd=lambda d:f'{d.day:02d}/{d.month:02d}/{d.year}'; fds=lambda d:f'{d.day} {MES[d.month]}'
 money=lambda x:f'{x:,.2f}'
 W,H=landscape(A4); M=26
-D0=dt.date(2026,7,13); D1=dt.date(2026,10,31); ND=(D1-D0).days+1
+D0=dt.date(2026,7,13); D1=dt.date(2026,11,30); ND=(D1-D0).days+1
 
 def txt(c,x,y,t,f='R',s=8,col=INK,al='l'):
     c.setFont(f,s); c.setFillColor(col); {'l':c.drawString,'r':c.drawRightString,'c':c.drawCentredString}[al](x,y,str(t))
@@ -55,7 +55,7 @@ def header(c,sub):
     c.setFillColor(DARK); c.rect(M,H-M-44,W-2*M,44,stroke=0,fill=1)
     txt(c,M+12,H-M-19,'CRONOGRAMA DE EJECUCIÓN — AVANCE EJECUTADO','B',15,white)
     txt(c,M+12,H-M-34,'Mejoramiento de servicios de apoyo al desarrollo productivo en alpacas y llamas · Municipalidad Distrital de Pallpata','R',8.5,HexColor('#E9E3DA'))
-    info=[('CUI','2675289'),('RESIDENTE','Ing. Justo'),('PERIODO',f'{fd(D0)} – {fd(D1)}'),('HOJA',sub)]
+    info=[('CUI','2675289'),('RESIDENTE','Ing. Justo'),('PERIODO',f'{fd(D0)} – {fd(CORTE)}'),('HOJA',sub)]
     x=W-M-12
     for k,v in reversed(info):
         w=max(sw(v,'B',8.5),sw(k,'R',6))+14; x-=w
@@ -76,9 +76,9 @@ def hoja1(c):
     # meses
     d=D0
     while d<=D1:
-        nx=dt.date(2026,d.month+1,1); e=min(nx,D1+dt.timedelta(1))
+        nx=dt.date(2026+(d.month==12),d.month%12+1,1); e=min(nx,D1+dt.timedelta(1))
         c.setFillColor(DARK); c.rect(X(d),y-14,X(e)-X(d),14,stroke=0,fill=1); c.setStrokeColor(white); c.line(X(d),y-14,X(d),y)
-        txt(c,(X(d)+X(e))/2,y-10,{7:'JULIO',8:'AGOSTO',9:'SETIEMBRE',10:'OCTUBRE'}[d.month],'B',8,white,'c'); d=nx
+        txt(c,(X(d)+X(e))/2,y-10,{7:'JULIO',8:'AGOSTO',9:'SETIEMBRE',10:'OCTUBRE',11:'NOVIEMBRE'}[d.month],'B',8,white,'c'); d=nx
     c.setFillColor(LIGHT); c.rect(x0,y-26,x1-x0,12,stroke=0,fill=1)
     d=D0
     while d<=D1:
@@ -128,6 +128,8 @@ def hoja1(c):
             c.setFillColor(INK); p=c.beginPath(); p.moveTo(xc,yc+s); p.lineTo(xc+s,yc); p.lineTo(xc,yc-s); p.lineTo(xc-s,yc); p.close(); c.drawPath(p,stroke=0,fill=1)
             txt(c,xc+7,ty,fit(tx,'R',7,x1-xc-10),'R',7)
     c.setStrokeColor(LINE); c.setLineWidth(0.6); c.rect(M,ybot,W-2*M,ytop+26-ybot,stroke=1,fill=0); c.line(x0-3,ybot,x0-3,ytop+26)
+    xc=X(CORTE)+dw/2; c.setStrokeColor(HexColor('#C8412B')); c.setLineWidth(1.2); c.line(xc,ybot,xc,ytop)
+    c.setFillColor(HexColor('#C8412B')); c.roundRect(xc-30,ybot-12,60,10,2,stroke=0,fill=1); txt(c,xc,ybot-9.5,'CORTE '+fds(CORTE),'B',6.5,white,'c')
     # leyenda
     y=ybot-14; x=M
     txt(c,x,y,'LEYENDA','B',7); x+=40
@@ -136,7 +138,7 @@ def hoja1(c):
     # tarjetas resumen
     yb=M+20; h=62; gap=8; w=(W-2*M-3*gap)/4
     c.setFillColor(DARK); c.roundRect(M,yb,w,h,4,stroke=0,fill=1)
-    txt(c,M+10,yb+h-14,'VALORIZADO EJECUTADO (13 jul – 31 oct)','B',6.8,HexColor('#BFB5A8'))
+    txt(c,M+10,yb+h-14,f'VALORIZADO EJECUTADO (13 jul – {fds(CORTE)})','B',6.8,HexColor('#BFB5A8'))
     txt(c,M+10,yb+h-36,f'S/ {money(VT)}','B',15,white)
     txt(c,M+10,yb+10,f'{VT/CD:.1%} del costo directo (S/ {money(CD)})','R',7,HexColor('#E9E3DA'))
     for i,m in enumerate((1,2,3)):
@@ -153,7 +155,7 @@ def hoja2(c):
     y=H-M-44-18
     txt(c,M,y+4,'VALORIZACIÓN EJECUTADA POR PARTIDA Y MES (S/)','B',10)
     txt(c,W-M,y+4,'Monto = N° de módulos ejecutados en el mes × parcial por módulo del PTO','I',7.2,MUTE,'r')
-    cols=[('ITEM',50,'l'),('DESCRIPCIÓN',214,'l'),('UND.',24,'c'),('META',26,'c')]+[(p,74,'r') for p in PL]+[('TOTAL EJECUTADO',86,'r'),('% DEL TOTAL',52,'r')]
+    cols=[('ITEM',50,'l'),('DESCRIPCIÓN',200,'l'),('UND.',24,'c'),('META',26,'c')]+[(p,66,'r') for p in PL]+[('TOTAL EJECUTADO',86,'r'),('% DEL TOTAL',52,'r')]
     TW=sum(w for _,w,_ in cols); x0=M+(W-2*M-TW)/2
     rows=[[p['item'],p['desc'],p['und'],p['meta']]+[money(v) if v else '—' for v in p['val']]+[money(sum(p['val'])),f'{sum(p["val"])/VT:.1%}'] for p in part]
     rows.append(['','TOTAL EJECUTADO','','']+[money(v) for v in vmes]+[money(VT),'100.0%'])
@@ -181,13 +183,13 @@ def hoja2(c):
     # resumen por meta + firmas
     y-=16
     txt(c,x0,y,'RESUMEN POR META','B',8.5)
-    y-=4; cw=[('META',214,'l'),('MÓDULOS',60,'r')]+[(p,74,'r') for p in PL]+[('TOTAL (S/)',86,'r')]
+    y-=4; cw=[('META',200,'l'),('MÓDULOS',50,'r')]+[(p,66,'r') for p in PL]+[('TOTAL (S/)',86,'r')]
     xx=x0
     c.setFillColor(DARK); c.rect(x0,y-11,sum(w for _,w,_ in cw),11,stroke=0,fill=1)
     for n,w,al in cw: txt(c,{'l':xx+4,'r':xx+w-4}[al],y-8,n,'B',6.8,white,al); xx+=w
     y-=11
     for m in (1,2,3):
-        vals=[f'{m} · {META[m]}',mmods[m]]+[money(sum(p['val'][k] for p in part if p['meta']==m)) or '—' for k in range(4)]+[money(vmeta[m])]
+        vals=[f'{m} · {META[m]}',mmods[m]]+[money(sum(p['val'][k] for p in part if p['meta']==m)) or '—' for k in range(5)]+[money(vmeta[m])]
         vals=[v if v!='0.00' else '—' for v in vals]
         xx=x0
         for (n,w,al),v in zip(cw,vals): txt(c,{'l':xx+4,'r':xx+w-4}[al],y-8.5,str(v),'R',7.3,INK,al); xx+=w
