@@ -21,6 +21,7 @@ for r in range(6,41):
     g=lambda c:D.cell(r,c).value
     if g(1) is None or g(10)!='Ejecutado' or g(8) is None: continue
     tr.append(dict(meta=g(1),resp=g(3),tipo=g(4),n=g(5),a=g(6),b=g(7),ini=td(g(8)),fin=td(g(9))))
+FIN=max(t['fin'] for t in tr)  # fin de partidas ejecutadas
 apoyo=dict(act=D['B45'].value,resp=D['C45'].value,n=D['D45'].value,a=D['E45'].value,b=D['F45'].value,ini=td(D['G45'].value),fin=td(D['H45'].value))
 hitos=[(td(D.cell(r,2).value),D.cell(r,3).value) for r in (50,51)]
 fer={td(D.cell(r,15).value) for r in range(6,21) if D.cell(r,15).value}
@@ -55,7 +56,7 @@ def header(c,sub):
     c.setFillColor(DARK); c.rect(M,H-M-44,W-2*M,44,stroke=0,fill=1)
     txt(c,M+12,H-M-19,'CRONOGRAMA DE EJECUCIÓN — AVANCE EJECUTADO','B',15,white)
     txt(c,M+12,H-M-34,'Mejoramiento de servicios de apoyo al desarrollo productivo en alpacas y llamas · Municipalidad Distrital de Pallpata','R',8.5,HexColor('#E9E3DA'))
-    info=[('CUI','2675289'),('RESIDENTE','Ing. Justo'),('PERIODO',f'{fd(D0)} – {fd(CORTE)}'),('HOJA',sub)]
+    info=[('CUI','2675289'),('RESIDENTE','Ing. Justo'),('PERIODO',f'{fd(D0)} – {fd(FIN)}'),('HOJA',sub)]
     x=W-M-12
     for k,v in reversed(info):
         w=max(sw(v,'B',8.5),sw(k,'R',6))+14; x-=w
@@ -128,8 +129,8 @@ def hoja1(c):
             c.setFillColor(INK); p=c.beginPath(); p.moveTo(xc,yc+s); p.lineTo(xc+s,yc); p.lineTo(xc,yc-s); p.lineTo(xc-s,yc); p.close(); c.drawPath(p,stroke=0,fill=1)
             txt(c,xc+7,ty,fit(tx,'R',7,x1-xc-10),'R',7)
     c.setStrokeColor(LINE); c.setLineWidth(0.6); c.rect(M,ybot,W-2*M,ytop+26-ybot,stroke=1,fill=0); c.line(x0-3,ybot,x0-3,ytop+26)
-    xc=X(CORTE)+dw/2; c.setStrokeColor(HexColor('#C8412B')); c.setLineWidth(1.2); c.line(xc,ybot,xc,ytop)
-    c.setFillColor(HexColor('#C8412B')); c.roundRect(xc-30,ybot-12,60,10,2,stroke=0,fill=1); txt(c,xc,ybot-9.5,'CORTE '+fds(CORTE),'B',6.5,white,'c')
+    xc=X(FIN)+dw; c.setStrokeColor(HexColor('#C8412B')); c.setLineWidth(1.2); c.line(xc,ybot,xc,ytop)
+    c.setFillColor(HexColor('#C8412B')); c.roundRect(xc-30,ybot-12,60,10,2,stroke=0,fill=1); txt(c,xc,ybot-9.5,'FIN '+fds(FIN),'B',6.5,white,'c')
     # leyenda
     y=ybot-14; x=M
     txt(c,x,y,'LEYENDA','B',7); x+=40
@@ -138,7 +139,7 @@ def hoja1(c):
     # tarjetas resumen
     yb=M+20; h=62; gap=8; w=(W-2*M-3*gap)/4
     c.setFillColor(DARK); c.roundRect(M,yb,w,h,4,stroke=0,fill=1)
-    txt(c,M+10,yb+h-14,f'VALORIZADO EJECUTADO (13 jul – {fds(CORTE)})','B',6.8,HexColor('#BFB5A8'))
+    txt(c,M+10,yb+h-14,f'VALORIZADO EJECUTADO (13 jul – {fds(FIN)})','B',6.8,HexColor('#BFB5A8'))
     txt(c,M+10,yb+h-36,f'S/ {money(VT)}','B',15,white)
     txt(c,M+10,yb+10,f'{VT/CD:.1%} del costo directo (S/ {money(CD)})','R',7,HexColor('#E9E3DA'))
     for i,m in enumerate((1,2,3)):
